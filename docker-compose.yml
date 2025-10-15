@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgresdb:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_LOCAL_PORT}:${DB_DOCKER_PORT}"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ./app
+    restart: unless-stopped
+    depends_on:
+      - postgresdb
+    env_file: .env
+    ports:
+      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"
+    environment:
+      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+    stdin_open: true
+    tty: true
+
+volumes:
+  db:
