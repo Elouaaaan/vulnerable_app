@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign in / Create account</title>
+  <link rel="stylesheet" href="/stylesheets/tab.css" />
+</head>
+<body>
+  <div class="container" role="main">
+    <section class="hero">
+      <h1>Welcome back</h1>
+      <p>Sign in to continue to your account, or create a new account — it only takes a minute.</p>
+
+      <div style="margin-top:auto" class="muted">By signing up you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy</a>.</div>
+    </section>
+
+    <aside class="card" aria-label="Authentication">
+      <div class="tabs" role="tablist">
+        <div id="tab-login" class="tab active" role="tab" aria-selected="true" tabindex="0">Login</div>
+        <div id="tab-register" class="tab" role="tab" aria-selected="false" tabindex="0">Create account</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="panel-login" role="tabpanel">
+        <form action="/auth/login" method="POST" novalidate>
+
+          <label for="login-email">Email</label>
+          <input id="login-email" name="email" type="email" required value="">
+
+          <label for="login-password">Password</label>
+          <input id="login-password" name="password" type="password" required>
+
+          <div class="row" style="align-items:center;justify-content:space-between">
+            <label class="small"><input type="checkbox" name="remember"> Remember me</label>
+            <a class="small" href="/forgot">Forgot password?</a>
+          </div>
+
+          <button type="submit">Sign in</button>
+
+          <div class="divider"></div>
+
+          <div class="small muted">Or sign in with</div>
+          <div class="socials">
+            <form action="/auth/google" method="GET" style="flex:1"><button type="submit" aria-label="Sign in with Google">Google</button></form>
+            <form action="/auth/github" method="GET" style="flex:1"><button type="submit" aria-label="Sign in with GitHub">GitHub</button></form>
+          </div>
+        </form>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="panel-register" role="tabpanel" style="display:none">
+        <form action="/auth/register" method="POST" novalidate>
+
+          <div class="row-half">
+            <div style="flex:1">
+              <label for="reg-name">First name</label>
+              <input id="reg-name" name="name" type="text" required value="">
+            </div>
+            <div style="flex:1">
+              <label for="reg-surname">Last name</label>
+              <input id="reg-surname" name="surname" type="text" required value="">
+            </div>
+          </div>
+
+          <label for="reg-email">Email</label>
+          <input id="reg-email" name="email" type="email" required value="">
+
+          <label for="reg-password">Password</label>
+          <input id="reg-password" name="password" type="password" required>
+
+          <label for="reg-password-confirm">Confirm password</label>
+          <input id="reg-password-confirm" name="passwordConfirm" type="password" required>
+
+          <div class="row">
+            <button type="submit">Create account</button>
+            <button type="button" onclick="switchToLogin()" style="background:#f3f4f6;border:1px solid #e6e9ef;color:#111">Back</button>
+          </div>
+        </form>
+      </div>
+
+      <script src="/javascripts/tab.js"></script>
+      <script src="/javascripts/auth.js"></script>
+    </aside>
+  </div>
+</body>
+</html>
