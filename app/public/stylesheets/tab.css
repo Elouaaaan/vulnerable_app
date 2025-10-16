@@ -1,0 +1,25 @@
+:root{--bg:#f6f8fa;--card:#fff;--accent:#2563eb;--muted:#6b7280}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:32px}
+.container{width:100%;max-width:920px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.95));box-shadow:0 10px 30px rgba(16,24,40,0.06);border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 420px}
+.hero{padding:40px;background:linear-gradient(180deg,#eef2ff,#fff);display:flex;flex-direction:column;gap:18px}
+.hero h1{margin:0;font-size:28px}
+.hero p{margin:0;color:var(--muted)}
+.card{padding:28px;background:var(--card)}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;padding:10px;border-radius:8px;text-align:center;cursor:pointer;border:1px solid #e6e9ef;background:#fafafa}
+.tab.active{background:var(--accent);color:white;border-color:var(--accent)}
+form{display:flex;flex-direction:column;gap:12px}
+label{font-size:13px;color:var(--muted)}
+input[type=text],input[type=email],input[type=password]{padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:14px;width:100%}
+.row{display:flex;gap:8px}
+.row-half{display:flex;gap:8px}
+.small{font-size:13px;color:var(--muted)}
+button{padding:10px;border-radius:8px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer}
+.muted{color:var(--muted);font-size:13px}
+.divider{height:1px;background:#eef2ff;margin:10px 0}
+.error{background:#fff1f0;color:#9f3a38;padding:10px;border-radius:8px;border:1px solid #ffd6d3}
+.success{background:#ecfdf5;color:#064e3b;padding:10px;border-radius:8px;border:1px solid #bbf7d0}
+.socials{display:flex;gap:8px}
+.socials button{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e9ef;background:white}
+@media (max-width:880px){.container{grid-template-columns:1fr;max-width:540px}.row-half{flex-direction:column}}
