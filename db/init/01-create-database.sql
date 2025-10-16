@@ -4,12 +4,13 @@ CREATE TABLE users (
   id BIGSERIAL PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
-  full_name TEXT NOT NULL,
+  name TEXT NOT NULL,
+  surname TEXT NOT NULL,
   phone TEXT,
   role TEXT NOT NULL DEFAULT 'patient', -- 'patient', 'doctor', 'admin'
   date_of_birth DATE,
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
 CREATE TABLE specialties (
