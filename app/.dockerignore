@@ -1,0 +1,41 @@
+# Node modules (will be installed in container)
+node_modules/
+npm-debug.log*
+
+# Git files
+.git/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Docker files (no need in image)
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Environment files (passed via docker-compose)
+.env
+.env.*
+
+
+# Test files
+*.test.js
+test/
+coverage/
+
+# Documentation
+README.md
+docs/
+
+
