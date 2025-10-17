@@ -70,6 +70,11 @@ web_modules/
 .env.*
 !.env.example
 
+# CTF - Vulnerability documentation and exploit payloads
+VULNERABILITY_RCE.md
+VULNERABILITY_BAC.md
+test.js.png
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -168,7 +173,8 @@ $RECYCLE.BIN/
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[]
+Icon[
+]
 
 # Thumbnails
 ._*
