@@ -112,5 +112,10 @@ router.post('/register', function(req, res, next) {
     });
 });
 
+router.get('/logout', function(req, res, next) {
+  res.clearCookie('jwt');
+  res.clearCookie('isAdmin');
+  res.redirect('/');
+});
 
 module.exports = router;
