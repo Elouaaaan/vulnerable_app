@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Appointment booked</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Appointment requested</h1>
+    <p>
+      Your appointment with Dr <%= appointment.doctor_surname %> <%= appointment.doctor_name %>
+      is requested for <%= new Date(appointment.start_ts).toLocaleString() %> - <%= new Date(appointment.end_ts).toLocaleString() %>.
+      Status: <strong><%= appointment.status %></strong>
+    </p>
+    <% if (appointment.reason) { %>
+      <p>Reason: <%= appointment.reason %></p>
+    <% } %>
+    <p><a href="/">Go to home</a> | <a href="/appointments/new">Book another</a></p>
+    <p><a href="/appointments">My appointments</a></p>
+  </body>
+  </html>
+
+

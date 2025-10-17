@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My appointments</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>My appointments</h1>
+
+    <% if (!appointments || appointments.length === 0) { %>
+      <p>No appointments yet.</p>
+      <p><a href="/appointments/new">Book your first appointment</a></p>
+    <% } else { %>
+      <ul>
+        <% appointments.forEach(function(a){ %>
+          <li>
+            With Dr <%= a.doctor_surname %> <%= a.doctor_name %> —
+            <%= new Date(a.start_ts).toLocaleString() %> to <%= new Date(a.end_ts).toLocaleString() %>
+            — Status: <strong><%= a.status %></strong>
+            <% if (a.reason) { %>
+              — Reason: <%= a.reason %>
+            <% } %>
+            — <a href="/appointments/confirm/<%= a.id %>">details</a>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+
+    <p><a href="/">Home</a> | <a href="/appointments/new">Book another</a></p>
+  </body>
+  </html>
+
+

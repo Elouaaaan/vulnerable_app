@@ -25,6 +25,12 @@
       <div id="panel-login" role="tabpanel">
         <form action="/auth/login" method="POST" novalidate>
 
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error" role="alert" style="color:#b91c1c;background:#fee2e2;border:1px solid #fecaca;padding:.5rem 1rem;margin-bottom:1rem">
+              <%= error %>
+            </div>
+          <% } %>
+
           <label for="login-email">Email</label>
           <input id="login-email" name="email" type="email" required value="">
 
@@ -37,14 +43,6 @@
           </div>
 
           <button type="submit">Sign in</button>
-
-          <div class="divider"></div>
-
-          <div class="small muted">Or sign in with</div>
-          <div class="socials">
-            <form action="/auth/google" method="GET" style="flex:1"><button type="submit" aria-label="Sign in with Google">Google</button></form>
-            <form action="/auth/github" method="GET" style="flex:1"><button type="submit" aria-label="Sign in with GitHub">GitHub</button></form>
-          </div>
         </form>
       </div>
 

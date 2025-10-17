@@ -2,40 +2,50 @@ var express = require('express');
 var router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const authMiddleware = require('../middlewares/authMiddleware');
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DB_URL);
 
 router.get('/', function(req, res, next) {
+  if (req.user) {
+    console.log("User already authenticated, redirecting to home:", req.user);
+    return res.redirect('/');
+  }
+
   res.render('auth');
 });
 
 router.post('/login', function(req, res, next) {
   if (!req.body) {
-    res.status(400).send({ message: "Missing request body" });
-    return;
+    res.status(400);
+    return res.render('auth', { error: 'Missing request body' });
   }
 
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
+    res.status(400);
+    return res.render('auth', { error: 'Email and password are required' });
   }
 
   db.any('SELECT * FROM users WHERE email = $1', [email])
     .then(user => {
       console.log(user);
       if (user.length === 0) {
-        return res.status(401).json({ message: 'Invalid credentials' });
+        res.status(401);
+        return res.render('auth', { error: 'Invalid credentials' });
       }
 
       bcrypt.compare(password, user[0].password_hash, (err, result) => {
         if (err) {
           console.error(err);
-          return res.status(500).json({ message: 'Internal server error' });
+          res.status(500);
+          return res.render('auth', { error: 'Internal server error' });
         }
         if (!result) {
           console.log("Invalid password");
-          return res.status(401).json({ message: 'Invalid credentials' });
+          res.status(401);
+          return res.render('auth', { error: 'Invalid credentials' });
         }
 
         console.log("User authenticated:", user[0]);
@@ -49,7 +59,7 @@ router.post('/login', function(req, res, next) {
         console.log("Generated JWT:", token);
 
         res
-          .status(200)
+          .status(302)
           .cookie(
             'jwt', 
             token, 
@@ -59,12 +69,13 @@ router.post('/login', function(req, res, next) {
               maxAge: parseInt(process.env.COOKIE_EXPIRES_IN),
               path: '/'
             })
-          .send({ message: "User logged in", redirectTo: "/" });
+          .redirect('/');
       });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500);
+      res.render('auth', { error: 'Internal server error' });
     });
 });
 
@@ -114,3 +125,13 @@ router.post('/register', function(req, res, next) {
 
 
 module.exports = router;
+
+// Logout clears the JWT cookie and redirects to auth
+router.get('/logout', function(req, res, next) {
+  try {
+    res.clearCookie('jwt', { path: '/' });
+  } catch (e) {
+    console.error('Error clearing cookie on logout:', e);
+  }
+  return res.redirect('/auth/');
+});
