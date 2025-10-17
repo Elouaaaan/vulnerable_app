@@ -18,6 +18,8 @@
                     <a href="/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">Home</a>
                     <% if (isLoggedIn) { %>
                         <a href="/users/profile" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">Profile</a>
+                        <a href="/appointments/new" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">Book</a>
+                        <a href="/appointments" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">My appointments</a>
                         <a href="/auth/logout" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md">Logout</a>
                         <div class="flex items-center space-x-2 bg-blue-100 px-3 py-2 rounded-md">
                             <span class="text-sm font-medium text-blue-800">👤 <%= userName %></span>
@@ -171,6 +173,8 @@
                         <li><a href="/" class="text-gray-400 hover:text-blue-400 transition-colors duration-200 flex items-center"><span class="mr-2">›</span>Home</a></li>
                         <li><a href="/auth" class="text-gray-400 hover:text-blue-400 transition-colors duration-200 flex items-center"><span class="mr-2">›</span>Login / Register</a></li>
                         <li><a href="/users/profile" class="text-gray-400 hover:text-blue-400 transition-colors duration-200 flex items-center"><span class="mr-2">›</span>My Profile</a></li>
+                        <li><a href="/appointments/new" class="text-gray-400 hover:text-blue-400 transition-colors duration-200 flex items-center"><span class="mr-2">›</span>Book an appointment</a></li>
+                        <li><a href="/appointments" class="text-gray-400 hover:text-blue-400 transition-colors duration-200 flex items-center"><span class="mr-2">›</span>My appointments</a></li>
                     </ul>
                 </div>
                 
