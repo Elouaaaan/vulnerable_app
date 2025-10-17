@@ -1,0 +1,20 @@
+{
+  "publicRoutes": [
+    "/",
+    "/auth/login",
+    "/auth/register",
+    "/users/profile"
+  ],
+  "protectedRoutes": [
+    "/users/upload"
+  ],
+  "internalRoutes": [
+    {
+      "path": "/admin-secret",
+      "description": "Internal administrative endpoints",
+      "access": "server-side-only",
+      "warning": "Not accessible via web browser - requires code execution"
+    }
+  ],
+  "notes": "Internal routes are only accessible through server-side code execution (RCE)"
+}
