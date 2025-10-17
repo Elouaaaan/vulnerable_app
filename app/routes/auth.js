@@ -8,7 +8,6 @@ const db = pgp(process.env.DB_URL);
 
 router.get('/', function(req, res, next) {
   if (req.user) {
-    console.log("User already authenticated, redirecting to home:", req.user);
     return res.redirect('/');
   }
 
@@ -30,7 +29,6 @@ router.post('/login', function(req, res, next) {
 
   db.any('SELECT * FROM users WHERE email = $1', [email])
     .then(user => {
-      console.log(user);
       if (user.length === 0) {
         res.status(401);
         return res.render('auth', { error: 'Invalid credentials' });
@@ -43,20 +41,15 @@ router.post('/login', function(req, res, next) {
           return res.render('auth', { error: 'Internal server error' });
         }
         if (!result) {
-          console.log("Invalid password");
           res.status(401);
           return res.render('auth', { error: 'Invalid credentials' });
         }
-
-        console.log("User authenticated:", user[0]);
 
         const token = jwt.sign(
           { id: user[0].id, name: user[0].name, surname: user[0].surname, email: user[0].email, role: user[0].role }, 
           process.env.JWT_SECRET, 
           { expiresIn: process.env.JWT_EXPIRES_IN }
         );
-
-        console.log("Generated JWT:", token);
 
         res
           .status(302)
@@ -81,45 +74,68 @@ router.post('/login', function(req, res, next) {
 
 router.post('/register', function(req, res, next) {
   if (!req.body) {
-    res.status(400).send({ message: "Missing request body" });
-    return;
+    res.status(400);
+    return res.render('auth', { error: 'Missing request body' });
   }
 
   const { name, surname, email, password, passwordConfirm } = req.body;
 
   if (!name || !surname || !email || !password || !passwordConfirm) {
-    return res.status(400).json({ message: 'Name, surname, email, password and password confirmation are required' });
+    res.status(400);
+    return res.render('auth', { error: 'Name, surname, email, password and password confirmation are required' });
   }
 
   if (password !== passwordConfirm) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+    res.status(400);
+    return res.render('auth', { error: 'Passwords do not match' });
   }
 
   db.any('SELECT COUNT(*) FROM users WHERE email = $1', [email])
     .then(result => {
       if (result[0].count > 0) {
-        return res.status(409).json({ message: 'Email already in use' });
+        res.status(409);
+        return res.render('auth', { error: 'Email already in use' });
       }
 
       bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
           console.error(err);
-          return res.status(500).json({ message: 'Internal server error' });
+          res.status(500);
+          return res.render('auth', { error: 'Internal server error' });
         }
 
-        db.none('INSERT INTO users (name, surname, email, password_hash, role) VALUES ($1, $2, $3, $4, $5)', [name, surname, email, hash, 'patient'])
-          .then(() => {
-            res.status(201).json({ message: 'User registered successfully' });
+        db.one(
+            'INSERT INTO users (name, surname, email, password_hash, role) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, surname, email, role',
+            [name, surname, email, hash, 'patient']
+          )
+          .then(newUser => {
+            const token = jwt.sign(
+              { id: newUser.id, name: newUser.name, surname: newUser.surname, email: newUser.email, role: newUser.role },
+              process.env.JWT_SECRET,
+              { expiresIn: process.env.JWT_EXPIRES_IN }
+            );
+
+            res
+              .status(302)
+              .cookie('jwt', token, {
+                sameSite: 'Strict',
+                httpOnly: true,
+                maxAge: parseInt(process.env.COOKIE_EXPIRES_IN),
+                path: '/'
+              })
+              .redirect('/');
           })
           .catch(err => {
             console.error(err);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500);
+            res.render('auth', { error: 'Internal server error' });
           });
       });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500);
+      res.render('auth', { error: 'Internal server error' });
     });
 });
 

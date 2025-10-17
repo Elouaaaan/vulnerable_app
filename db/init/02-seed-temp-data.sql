@@ -102,4 +102,8 @@ JOIN (
 ) t ON true
 ON CONFLICT DO NOTHING;
 
+INSERT INTO flags (code, description)
+VALUES ('FLAG{sqli-second-order}', 'Faille SQLi de second ordre')
+ON CONFLICT (code) DO NOTHING;
+
 

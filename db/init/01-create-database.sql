@@ -70,3 +70,10 @@ CREATE TABLE appointments (
 CREATE INDEX idx_appointments_patient ON appointments(patient_id, start_ts);
 CREATE INDEX idx_appointments_doctor ON appointments(doctor_id, start_ts);
 CREATE INDEX idx_time_slots_doctor_start ON time_slots(doctor_id, start_ts);
+
+CREATE TABLE flags (
+  id SERIAL PRIMARY KEY,
+  code TEXT NOT NULL UNIQUE,
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);

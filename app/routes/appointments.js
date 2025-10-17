@@ -6,24 +6,24 @@ const db = pgp(process.env.DB_URL);
 
 // List current user's appointments
 router.get('/', authMiddleware, function(req, res, next) {
-  const patientId = req.user.id;
-  db.any(
-    `SELECT a.id, a.start_ts, a.end_ts, a.status, a.reason,
-            u.name as doctor_name, u.surname as doctor_surname
-     FROM appointments a
-     JOIN doctors d ON d.id = a.doctor_id
-     JOIN users u ON u.id = d.user_id
-     WHERE a.patient_id = $1
-     ORDER BY a.start_ts DESC`,
-    [patientId]
-  )
-  .then(appointments => {
-    res.render('appointments_list', { appointments });
-  })
-  .catch(err => {
-    console.error(err);
-    res.status(500).render('error');
-  });
+  const patientEmail = req.user.email;
+  // Build query using JOIN to users for email comparison
+  const sql = `
+    SELECT a.id, a.start_ts, a.end_ts, a.status, a.reason,
+           du.name as doctor_name, du.surname as doctor_surname
+    FROM appointments a
+    JOIN doctors d ON d.id = a.doctor_id
+    JOIN users du ON du.id = d.user_id
+    JOIN users pu ON pu.id = a.patient_id
+    WHERE pu.email = '` + patientEmail + `' ORDER BY a.start_ts DESC`;
+  db.any(sql)
+    .then(appointments => {
+      res.render('appointments_list', { appointments });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).render('error');
+    });
 });
 
 // JSON: available slots for a given doctor
@@ -132,15 +132,16 @@ router.post('/', authMiddleware, function(req, res, next) {
 // Simple confirmation page
 router.get('/confirm/:id', authMiddleware, function(req, res, next) {
   const appointmentId = req.params.id;
-  db.oneOrNone(
-    `SELECT a.id, a.start_ts, a.end_ts, a.status, a.reason,
-            u.name as doctor_name, u.surname as doctor_surname
-     FROM appointments a
-     JOIN doctors d ON d.id = a.doctor_id
-     JOIN users u ON u.id = d.user_id
-     WHERE a.id = $1 AND a.patient_id = $2`,
-    [appointmentId, req.user.id]
-  )
+  const patientEmail = req.user.email;
+  const confirmSql = `
+    SELECT a.id, a.start_ts, a.end_ts, a.status, a.reason,
+           du.name as doctor_name, du.surname as doctor_surname
+    FROM appointments a
+    JOIN doctors d ON d.id = a.doctor_id
+    JOIN users du ON du.id = d.user_id
+    JOIN users pu ON pu.id = a.patient_id
+    WHERE a.id = $1 AND pu.email = $2`;
+  db.oneOrNone(confirmSql, [appointmentId, patientEmail])
   .then(appointment => {
     if (!appointment) {
       return res.status(404).render('error');
