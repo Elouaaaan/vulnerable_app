@@ -6,6 +6,7 @@
 - **Réservation**: sélection d’un médecin, création du rendez‑vous.
 - **Confirmation**: affichage des détails du rendez‑vous créé.
 - **Mes rendez‑vous**: liste des rendez‑vous du patient connecté.
+  - Page « My appointments » ajoutée: consultation des rendez‑vous existants.
 
 ### Prérequis
 - Docker et Docker Compose
@@ -35,10 +36,28 @@ docker compose up --build
 3) Accéder à l’application: `http://localhost:3000`
 
 ### Endpoints principaux
-- `GET /`: page d’accueil.
-- `GET /auth/`: page d’auth; `POST /auth/login`, `POST /auth/register`.
-- `GET /appointments`: liste des rendez‑vous du patient connecté.
-- `GET /appointments/new`: page de réservation.
-- `GET /appointments/slots?doctor_id=...`: JSON des créneaux disponibles pour un médecin.
-- `POST /appointments/`: création de rendez‑vous (transaction: lock du créneau, update, insertion).
-- `GET /appointments/confirm/:id`: confirmation et détails d’un rendez‑vous.
+- `GET /` : page d’accueil.
+- `GET /auth/` : page d’auth; `POST /auth/login`, `POST /auth/register`, `GET /auth/logout`.
+- `GET /appointments` : liste des rendez‑vous. 
+- `GET /appointments/new` : page de réservation.
+- `GET /appointments/slots?doctor_id=...` : JSON des créneaux. 
+- `POST /appointments/` : création de rendez‑vous.
+- `GET /appointments/confirm/:id` : confirmation/détails. 
+
+### Pages / UI ajoutées
+- Accueil (navbar + footer) avec liens vers « Book » et « My appointments » si connecté.
+- Réservation (`/appointments/new`): sélection du médecin, chargement des créneaux via fetch `/appointments/slots`.
+- Liste (`/appointments`): affiche les rendez‑vous du patient.
+- Confirmation (`/appointments/confirm/:id`).
+
+### Infrastructure 
+- Orchestration: Docker Compose (`docker-compose.yml`)
+  - Service `postgresdb` (PostgreSQL 15)
+    - Variables depuis `.env` (`DB_USER`, `DB_PASSWORD`, `DB_NAME`, ports)
+    - Volume persistant `db`
+    - Initialisation via scripts `db/init/*.sql` (schéma + données)
+  - Service `app` (Node.js/Express)
+    - Build depuis `app/Dockerfile`
+    - Expose le port `NODE_LOCAL_PORT` vers `NODE_DOCKER_PORT`
+    - `DB_URL` injectée depuis `.env` pour la connexion Postgres
+- Réseau par défaut de Compose, communication `app` → `postgresdb` via `DB_HOST=postgresdb`
