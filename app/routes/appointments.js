@@ -4,10 +4,14 @@ var authMiddleware = require('../middlewares/authMiddleware');
 const pgp = require('pg-promise')();
 const db = pgp(process.env.DB_URL);
 
-// List current user's appointments
+// Render appointments page
 router.get('/', authMiddleware, function(req, res, next) {
+  res.render('appointments_list');
+});
+
+// JSON: current user's appointments
+router.get('/data', authMiddleware, function(req, res, next) {
   const patientEmail = req.user.email;
-  // Build query using JOIN to users for email comparison
   const sql = `
     SELECT a.id, a.start_ts, a.end_ts, a.status, a.reason,
            du.name as doctor_name, du.surname as doctor_surname
@@ -16,13 +20,14 @@ router.get('/', authMiddleware, function(req, res, next) {
     JOIN users du ON du.id = d.user_id
     JOIN users pu ON pu.id = a.patient_id
     WHERE pu.email = '` + patientEmail + `' ORDER BY a.start_ts DESC`;
+
   db.any(sql)
     .then(appointments => {
-      res.render('appointments_list', { appointments });
+      res.json({ appointments });
     })
     .catch(err => {
       console.error(err);
-      res.status(500).render('error');
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 

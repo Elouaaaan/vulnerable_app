@@ -7,26 +7,24 @@
   <body>
     <h1>My appointments</h1>
 
-    <% if (!appointments || appointments.length === 0) { %>
-      <p>No appointments yet.</p>
-      <p><a href="/appointments/new">Book your first appointment</a></p>
-    <% } else { %>
-      <ul>
-        <% appointments.forEach(function(a){ %>
-          <li>
-            With Dr <%= a.doctor_surname %> <%= a.doctor_name %> —
-            <%= new Date(a.start_ts).toLocaleString() %> to <%= new Date(a.end_ts).toLocaleString() %>
-            — Status: <strong><%= a.status %></strong>
-            <% if (a.reason) { %>
-              — Reason: <%= a.reason %>
-            <% } %>
-            — <a href="/appointments/confirm/<%= a.id %>">details</a>
-          </li>
-        <% }); %>
-      </ul>
-    <% } %>
+    <div id="appointments-container">
+      <p id="appointments-loading">Loading your appointments…</p>
+      <p id="appointments-empty" class="hidden">No appointments yet.<br /><a href="/appointments/new">Book your first appointment</a></p>
+      <ul id="appointments-list" class="hidden"></ul>
+      <p id="appointments-error" class="hidden">We couldn't load your appointments. Please refresh the page.</p>
+    </div>
 
     <p><a href="/">Home</a> | <a href="/appointments/new">Book another</a></p>
+
+    <style>
+      .hidden {
+        display: none;
+      }
+      #appointments-list li {
+        margin-bottom: 0.5rem;
+      }
+    </style>
+    <script src="/javascripts/appointments.js" defer></script>
   </body>
   </html>
 
